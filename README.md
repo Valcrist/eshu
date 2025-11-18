@@ -72,10 +72,10 @@ ENCRYPTION_SM=True
 ENCRYPTION=name-of-your-secret-in-sm
 
 # Make sure your AWS credentials are also configured in the environment
-AWS_KEY_ID="your-api-key"
-AWS_SECRET="your-secret-key"
+AWS_KEY_ID=your-api-key
+AWS_SECRET=your-secret-key
 # Optional (defaults to ap-southeast-1)
-AWS_REGION="ap-southeast-1"
+AWS_REGION=ap-southeast-1
 ```
 
 ```python
