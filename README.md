@@ -37,7 +37,6 @@ ENCRYPTION=my-super-secret-passphrase
 ```
 
 ```python
-import os
 from eshu import Eshu, EshuError
 
 
@@ -60,6 +59,7 @@ try:
 
 except EshuError as e:
     print(f"An Eshu error occurred: {e}")
+
 ```
 
 ### With AWS Secrets Manager
@@ -79,7 +79,6 @@ AWS_REGION=ap-southeast-1
 ```
 
 ```python
-import os
 from eshu import Eshu, EshuError
 
 
@@ -96,6 +95,7 @@ try:
 
 except EshuError as e:
     print(f"An Eshu error occurred: {e}")
+
 ```
 
 Alternatively, you can pass the AWS credentials directly to the `Eshu` constructor. This is useful if you prefer not to set them as environment variables.
@@ -127,4 +127,5 @@ try:
 
 except EshuError as e:
     print(f"An Eshu error occurred: {e}")
+
 ```
