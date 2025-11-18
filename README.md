@@ -28,15 +28,18 @@ If you set `ENCRYPTION_SM=true`, `Eshu` will attempt to connect to AWS Secrets M
 
 ## Usage
 
-Here is a simple example of how to use `Eshu` without Secrets Manager:
+Here is a simple example of how to use `Eshu` without Secrets Manager
+
+```
+# Set environment variables
+ENCRYPTION_SM=False
+ENCRYPTION=my-super-secret-passphrase
+```
 
 ```python
 import os
 from eshu import Eshu, EshuError
 
-# Set environment variables
-ENCRYPTION_SM=False
-ENCRYPTION=my-super-secret-passphrase
 
 try:
     # Initialize Eshu
@@ -54,18 +57,16 @@ try:
     print(f"Decrypted: {decrypted_text}")
 
     assert original_text == decrypted_text
+
 except EshuError as e:
     print(f"An Eshu error occurred: {e}")
 ```
 
 ### With AWS Secrets Manager
 
-If you are using a secret stored in AWS Secrets Manager:
+If you are using a secret stored in AWS Secrets Manager
 
-```python
-import os
-from eshu import Eshu, EshuError
-
+```
 # Set environment variables
 ENCRYPTION_SM=True
 ENCRYPTION=name-of-your-secret-in-sm
@@ -75,6 +76,12 @@ AWS_KEY_ID="your-api-key"
 AWS_SECRET="your-secret-key"
 # Optional (deafults to ap-southeast-1)
 AWS_REGION="ap-southeast-1"
+```
+
+```python
+import os
+from eshu import Eshu, EshuError
+
 
 try:
     # Initialize Eshu
@@ -86,18 +93,22 @@ try:
     decrypted_text = eshu.decrypt(encrypted_token)
 
     assert original_text == decrypted_text
+
 except EshuError as e:
     print(f"An Eshu error occurred: {e}")
 ```
 
 Alternatively, you can pass the AWS credentials directly to the `Eshu` constructor. This is useful if you prefer not to set them as environment variables.
 
-```python
-from eshu import Eshu, EshuError
-
+```
 # Set environment variables
 ENCRYPTION_SM=True
 ENCRYPTION=name-of-your-secret-in-sm
+```
+
+```python
+from eshu import Eshu, EshuError
+
 
 try:
     # Initialize Eshu with credentials
@@ -113,6 +124,7 @@ try:
     decrypted_text = eshu.decrypt(encrypted_token)
 
     assert original_text == decrypted_text
+
 except EshuError as e:
     print(f"An Eshu error occurred: {e}")
 ```
