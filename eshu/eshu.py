@@ -14,13 +14,16 @@ class EshuError(Exception):
 
 class Eshu:
     def __init__(self, key_id=None, secret=None, region=None):
-        self._secret_source = get_env("ENCRYPTION", None)
-        self._use_sm = get_env("ENCRYPTION_SM", False)
+        secret_config = get_env("ESHU_SECRET", None)
+        if not secret_config:
+            secret_val = get_env("ENCRYPTION", None)
+            if get_env("ENCRYPTION_SM", False):
+                secret_config = f"aws-sm:{secret_val}"
+            else:
+                secret_config = secret_val
+        debug(secret_config, "eshu::secret_config", lvl=2)
+        self._secret_config = secret_config
         self._passphrase = None
-
-        debug(self._secret_source, "Eshu::secret source", lvl=2)
-        debug(self._use_sm, "Eshu::use secrets manager", lvl=2)
-
         self._key_id = key_id
         self._secret = secret
         self._region = region
@@ -36,29 +39,37 @@ class Eshu:
         return base64.urlsafe_b64encode(kdf.derive(passphrase.encode()))
 
     def _fetch_passphrase(self):
-        if self._use_sm and self._secret_source:
-            from eshu.sm import get_secret
+        if not self._secret_config:
+            raise EshuError(
+                "Passphrase source not configured. Set ESHU_SECRET env variable."
+            )
+        if self._secret_config.startswith("aws-sm:"):
+            from eshu.sm import get_secret, SecretsManagerError
 
+            secret_name = self._secret_config[7:]
             key_id = self._key_id or get_env("AWS_KEY_ID", None)
             aws_secret = self._secret or get_env("AWS_SECRET", None)
             region = self._region or get_env("AWS_REGION", "ap-southeast-1")
+            try:
+                secret = get_secret(
+                    secret_name,
+                    key_id=key_id,
+                    secret=aws_secret,
+                    region=region,
+                )
+            except SecretsManagerError as e:
+                raise EshuError(
+                    f"Failed to retrieve secret from AWS Secrets Manager: {e}"
+                )
 
-            secret = get_secret(
-                self._secret_source,
-                key_id=key_id,
-                secret=aws_secret,
-                region=region,
-            )
             if not secret:
                 raise EshuError(
-                    "Failed to get secret from AWS Secrets Manager. Set AWS credentials as env or pass as args."
+                    "Failed to get secret from AWS Secrets Manager. "
+                    "Set AWS credentials as env variables or pass them as args."
                 )
             self._passphrase = secret
-
-        elif self._secret_source:
-            self._passphrase = self._secret_source
         else:
-            raise EshuError("Passphrase source not configured. Set ENCRYPTION env variable.")
+            self._passphrase = self._secret_config
 
     def _get_passphrase(self) -> str:
         if not self._passphrase:
@@ -67,11 +78,14 @@ class Eshu:
 
     def encrypt(self, text: str) -> str:
         passphrase = self._get_passphrase()
-        salt = os.urandom(16)
-        key = self._derive_key(salt, passphrase)
-        fernet = Fernet(key)
-        encrypted = fernet.encrypt(text.encode())
-        return base64.urlsafe_b64encode(salt + encrypted).decode().rstrip("=")
+        try:
+            salt = os.urandom(16)
+            key = self._derive_key(salt, passphrase)
+            fernet = Fernet(key)
+            encrypted = fernet.encrypt(text.encode())
+            return base64.urlsafe_b64encode(salt + encrypted).decode().rstrip("=")
+        except Exception as e:
+            raise EshuError(f"Encryption failed: {e}")
 
     def decrypt(self, token: str) -> str:
         passphrase = self._get_passphrase()

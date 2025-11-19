@@ -18,13 +18,13 @@ This will install the package and its dependencies listed in `setup.py`.
 
 `Eshu` is configured through environment variables.
 
-- `ENCRYPTION`: This is the primary secret key. It can be a passphrase you provide directly. If you are using AWS Secrets Manager, this variable should be the name of the secret to be fetched.
-
-- `ENCRYPTION_SM`: Set this to `true` if you want to use AWS Secrets Manager to fetch the secret key. If this is not set or is `false`, `Eshu` will use the value of `ENCRYPTION` directly as the passphrase.
+- `ESHU_SECRET`: This variable holds the secret or a URI to the secret.
+    - If you provide a direct value (e.g., `my-super-secret-passphrase`), it will be used as the passphrase.
+    - If you are using AWS Secrets Manager, the value should be `aws-sm:<secret-name>`, where `<secret-name>` is the name of the secret to be fetched.
 
 ### AWS Secrets Manager
 
-If you set `ENCRYPTION_SM=true`, `Eshu` will attempt to connect to AWS Secrets Manager. For this to work, you must have your AWS credentials configured. You can do this either by setting the `AWS_KEY_ID`, and `AWS_SECRET` environment variables, or by passing them as parameters when you initialize the `Eshu` class.
+If you set `ESHU_SECRET` to `aws-sm:<secret-name>`, `Eshu` will attempt to connect to AWS Secrets Manager. For this to work, you must have your AWS credentials configured. You can do this either by setting the `AWS_KEY_ID`, and `AWS_SECRET` environment variables, or by passing them as parameters when you initialize the `Eshu` class.
 
 ## Usage
 
@@ -32,8 +32,7 @@ Here is a simple example of how to use `Eshu` without Secrets Manager
 
 ```
 # Set environment variables
-ENCRYPTION_SM=False
-ENCRYPTION=my-super-secret-passphrase
+ESHU_SECRET=my-super-secret-passphrase
 ```
 
 ```python
@@ -68,8 +67,7 @@ If you are using a secret stored in AWS Secrets Manager
 
 ```
 # Set environment variables
-ENCRYPTION_SM=True
-ENCRYPTION=name-of-your-secret-in-sm
+ESHU_SECRET=aws-sm:name-of-your-secret-in-sm
 
 # Make sure your AWS credentials are also configured in the environment
 AWS_KEY_ID=your-api-key
@@ -102,8 +100,7 @@ Alternatively, you can pass the AWS credentials directly to the `Eshu` construct
 
 ```
 # Set environment variables
-ENCRYPTION_SM=True
-ENCRYPTION=name-of-your-secret-in-sm
+ESHU_SECRET=aws-sm:name-of-your-secret-in-sm
 ```
 
 ```python
@@ -111,7 +108,7 @@ from eshu import Eshu, EshuError
 
 
 try:
-    # Initialize Eshu with credentials
+    # Initialize Eshu with AWS credentials
     eshu = Eshu(
         key_id="your-api-key",
         secret="your-secret-key",
