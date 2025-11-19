@@ -71,11 +71,14 @@ class Eshu:
         key = self._derive_key(salt, passphrase)
         fernet = Fernet(key)
         encrypted = fernet.encrypt(text.encode())
-        return base64.urlsafe_b64encode(salt + encrypted).decode()
+        return base64.urlsafe_b64encode(salt + encrypted).decode().rstrip("=")
 
     def decrypt(self, token: str) -> str:
         passphrase = self._get_passphrase()
         try:
+            stripped = len(token) % 4
+            if stripped:
+                token += "=" * (4 - stripped)
             decoded_token = base64.urlsafe_b64decode(token.encode())
             salt = decoded_token[:16]
             encrypted_text = decoded_token[16:]
