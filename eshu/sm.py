@@ -9,6 +9,8 @@ class SecretsManagerError(Exception):
 
 
 class SecretsManager:
+    """A singleton client for AWS Secrets Manager."""
+
     _instances = {}
 
     def __new__(
@@ -45,6 +47,21 @@ class SecretsManager:
         self._initialized = True
 
     def get_secret(self, secret_name: str):
+        """
+        Retrieves a secret from AWS Secrets Manager.
+
+        Args:
+            secret_name: The name of the secret to retrieve.
+
+        Returns:
+            The secret value, which can be a string or a dict if the secret is a JSON.
+            Returns the raw string if JSON decoding fails.
+            Returns None if the secret has no value.
+
+        Raises:
+            SecretsManagerError: If the client is not initialized or the secret cannot
+            be retrieved
+        """
         if not self.client:
             raise SecretsManagerError("Secrets Manager client is not initialized.")
         try:

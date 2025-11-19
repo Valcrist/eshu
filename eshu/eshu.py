@@ -13,6 +13,19 @@ class EshuError(Exception):
 
 
 class Eshu:
+    """
+    A simple tool for symmetric encryption and decryption.
+
+    This class uses a passphrase to encrypt and decrypt text. The passphrase can be
+    provided directly via the ESHU_SECRET environment variable or fetched from
+    AWS Secrets Manager by prefixing the secret name with 'aws-sm:'.
+
+    Args:
+        key_id (str, optional): AWS access key ID. Overrides the AWS_KEY_ID env var
+        secret (str, optional): AWS secret access key. Overrides the AWS_SECRET env var
+        region (str, optional): AWS region. Overrides the AWS_REGION env var
+    """
+
     def __init__(self, key_id=None, secret=None, region=None):
         secret_config = get_env("ESHU_SECRET", None)
         if not secret_config:
@@ -77,6 +90,18 @@ class Eshu:
         return self._passphrase
 
     def encrypt(self, text: str) -> str:
+        """
+        Encrypts a string.
+
+        Args:
+            text: The string to encrypt
+
+        Returns:
+            A base64-encoded and URL-safe encrypted token
+
+        Raises:
+            EshuError: If the encryption fails
+        """
         passphrase = self._get_passphrase()
         try:
             salt = os.urandom(16)
@@ -88,6 +113,18 @@ class Eshu:
             raise EshuError(f"Encryption failed: {e}")
 
     def decrypt(self, token: str) -> str:
+        """
+        Decrypts a token back to its original string.
+
+        Args:
+            token: The encrypted token to decrypt
+
+        Returns:
+            The original, decrypted string
+
+        Raises:
+            EshuError: If the token is invalid or decryption fails
+        """
         passphrase = self._get_passphrase()
         try:
             stripped = len(token) % 4
