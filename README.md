@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  It's named after Eshu, a messenger and trickster deity who serves as the interpreter between the Orishas (gods) and humanity.
+  Named after Eshu - a messenger and trickster deity, interpreter between the Orishas (gods) and humanity.
 </p>
 
 <p align="center">
