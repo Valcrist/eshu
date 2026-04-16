@@ -10,7 +10,7 @@ setup(
     install_requires=[
         "cryptography",
         "boto3",
-        "toolbox @ git+https://github.com/Valcrist/toolbox.git#egg=toolbox",
+        "toolbox @ git+https://github.com/Valcrist/toolbox.git",
     ],
     url="https://github.com/Valcrist/eshu",
     author="Valcrist",

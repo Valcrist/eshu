@@ -1,8 +1,22 @@
-# Eshu
+<h1 align="center">Eshu</h1>
 
-A simple tool for symmetric encryption and decryption.
+<p align="center">
+  <strong>A simple tool for symmetric encryption and decryption.</strong>
+</p>
 
-It's named after Eshu, a messenger and trickster deity who serves as the interpreter between the Orishas (gods) and humanity.
+<p align="center">
+  It's named after Eshu, a messenger and trickster deity who serves as the interpreter between the Orishas (gods) and humanity.
+</p>
+
+<p align="center">
+  <a href="https://github.com/Valcrist/eshu/stargazers"><img src="https://img.shields.io/github/stars/Valcrist/eshu?style=flat&color=yellow" alt="Stars"></a>
+  <a href="https://github.com/Valcrist/eshu/commits/main"><img src="https://img.shields.io/github/last-commit/Valcrist/eshu?style=flat" alt="Last Commit"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-PolyForm-orange?style=flat" alt="License"></a>
+</p>
+
+---
+
+
 
 ## Installation
 
